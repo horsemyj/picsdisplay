@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>图片下载站 - 列表</title>
+    <style>
+      :root {
+        --bg: #020817;
+        --panel: #111827;
+        --panel-border: #334155;
+        --text: #e2e8f0;
+        --muted: #94a3b8;
+        --accent: #8b5cf6;
+        --accent-2: #3b82f6;
+        --card: #0b1220;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        background: linear-gradient(135deg, #020817, #0f172a);
+        color: var(--text);
+        font-family: "Segoe UI", "PingFang SC", sans-serif;
+      }
+
+      .wrap {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 36px 20px 60px;
+      }
+
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+        gap: 16px;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 2rem;
+      }
+
+      .logout {
+        padding: 10px 16px;
+        background: linear-gradient(135deg, var(--accent), var(--accent-2));
+        color: white;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 700;
+      }
+
+      .gallery {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 18px;
+      }
+
+      .card {
+        background: var(--card);
+        border: 1px solid var(--panel-border);
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 10px 24px rgba(0,0,0,0.18);
+      }
+
+      .card img {
+        display: block;
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        background: #111827;
+      }
+
+      .meta {
+        padding: 12px 14px 14px;
+      }
+
+      .meta .name {
+        margin: 0 0 10px;
+        font-size: 14px;
+        line-height: 1.4;
+        color: var(--text);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .meta a {
+        display: inline-block;
+        text-decoration: none;
+        color: #7dd3fc;
+        font-weight: 700;
+      }
+
+      .empty {
+        padding: 28px;
+        color: var(--muted);
+        background: rgba(17,24,39,0.8);
+        border: 1px solid var(--panel-border);
+        border-radius: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="topbar">
+        <h1>图片下载站</h1>
+        <button class="logout" id="logoutBtn">退出登录</button>
+      </div>
+
+      <div id="gallery" class="gallery"></div>
+    </div>
+
+    <script>
+      const gallery = document.getElementById("gallery");
+      const logoutBtn = document.getElementById("logoutBtn");
+
+      async function loadManifest() {
+        try {
+          const res = await fetch("./assets/manifest.json");
+          if (!res.ok) {
+            gallery.innerHTML = '<div class="empty">未找到图片清单，请先生成 manifest.json</div>';
+            return;
+          }
+
+          const items = await res.json();
+
+          if (!Array.isArray(items) || items.length === 0) {
+            gallery.innerHTML = '<div class="empty">当前没有可显示的图片</div>';
+            return;
+          }
+
+          gallery.innerHTML = items.map(item => `
+            <div class="card">
+              <img src="${item.thumbnail}" alt="${item.displayName}" />
+              <div class="meta">
+                <div class="name">${item.displayName}</div>
+                <a href="${item.fileUrl}" download="${item.downloadName}">下载原图</a>
+              </div>
+            </div>
+          `).join("");
+        } catch (error) {
+          console.error(error);
+          gallery.innerHTML = '<div class="empty">加载失败，请检查 manifest.json</div>';
+        }
+      }
+
+      logoutBtn.addEventListener("click", () => {
+        localStorage.removeItem("loggedUser");
+        window.location.href = "./index.html";
+      });
+
+      loadManifest();
+    </script>
+  </body>
+</html>
