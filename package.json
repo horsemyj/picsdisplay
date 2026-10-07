@@ -1,0 +1,14 @@
+{
+  "name": "picsdisplay",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "rename-assets": "node scripts/rename-assets.js",
+    "build-thumbnails": "node scripts/build-thumbnails.js",
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "dependencies": {
+    "sharp": "^0.33.5"
+  }
+}

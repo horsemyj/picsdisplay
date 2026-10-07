@@ -1,0 +1,8 @@
+name = "picsdisplay-login"
+main = "worker.js"
+compatibility_date = "2026-10-7"
+
+[[d1_databases]]
+binding = "picsdisplay-db"
+database_name = "picsdisplay-db"
+database_id = "280e9e7d-3804-45e5-9454-a60d28c3664f"
